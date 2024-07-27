@@ -1,0 +1,124 @@
+# Reference configuration - https://raw.githubusercontent.com/golangci/golangci-lint/master/.golangci.reference.yml .
+
+# This file contains only the overridden configuration options
+# with their default values (in comments).
+#
+
+run:
+  # Timeout for analysis, e.g. 30s, 5m.
+  # Default: 1m
+  timeout: 5m
+  # If set, we pass it to "go list -mod={option}". From "go help modules":
+  # If invoked with -mod=readonly, the go command is disallowed from the implicit
+  # automatic updating of go.mod described above. Instead, it fails when any changes
+  # to go.mod are needed. This setting is most useful to check that go.mod does
+  # not need updates, such as in a continuous integration and testing system.
+  # If invoked with -mod=vendor, the go command assumes that the vendor
+  # directory holds the correct copies of dependencies and ignores
+  # the dependency descriptions in go.mod.
+  #
+  # Allowed values: readonly|vendor|mod
+  # Default: ""
+  modules-download-mode: readonly
+
+# output configuration options
+output:
+  # Format: colored-line-number|line-number|json|colored-tab|tab|checkstyle|code-climate|junit-xml|github-actions|teamcity
+  #
+  # Multiple can be specified by separating them by comma, output can be provided
+  # for each of them by separating format name and path by colon symbol.
+  # Output path can be either `stdout`, `stderr` or path to the file to write to.
+  # Example: "checkstyle:report.xml,json:stdout,colored-line-number"
+  #
+  # Default: colored-line-number
+  format: colored-line-number:stdout,code-climate:gl-code-quality-report.json
+
+# All available settings of specific linters.
+linters-settings:
+  depguard:
+    # Rules to apply.
+    #
+    # Variables:
+    # - File Variables
+    #   you can still use and exclamation mark ! in front of a variable to say not to use it.
+    #   Example !$test will match any file that is not a go test file.
+    #
+    #   `$all` - matches all go files
+    #   `$test` - matches all go test files
+    #
+    # - Package Variables
+    #
+    #  `$gostd` - matches all of go's standard library (Pulled from `GOROOT`)
+    #
+    # Default: Only allow $gostd in all files.
+    rules:
+      # Name of a rule.
+      main:
+        # Used to determine the package matching priority.
+        # There are three different modes: `original`, `strict`, and `lax`.
+        # Default: "original"
+        # list-mode: original
+        # List of file globs that will match this list of settings to compare against.
+        # Default: $all
+        # files:
+        #   - "!**/*_a _file.go"
+        # List of allowed packages.
+        allow:
+          - $gostd
+          - github.com/golang-jwt/jwt
+          - github.com/hasura/go-graphql-client
+          - github.com/prometheus/client_golang
+          - github.com/stretchr/testify
+          - k8s.io
+          - gitlab.com
+        # Packages that are not allowed where the value is a suggestion.
+        deny:
+          - pkg: "github.com/sirupsen/logrus"
+            desc: use zap
+          - pkg: "gitlab.com/gitlab-org/labkit/log"
+            desc: use zap
+          # TODO: uncomment this and fix failures
+          # - pkg: "log"
+          #   desc: use zap
+          - pkg: "github.com/pkg/errors"
+            desc: Should be replaced by standard lib errors package
+
+  govet:
+    # Report about shadowed variables.
+    # Default: false
+    check-shadowing: true
+    # Enable all analyzers.
+    # Default: false
+    # enable-all: true
+
+linters:
+  # Enable specific linter
+  # https://golangci-lint.run/usage/linters/#enabled-by-default
+  enable:
+    - bodyclose
+    - containedctx
+    - contextcheck
+    - cyclop
+    - decorder
+    - depguard
+    - errname
+    - exhaustive
+    - exportloopref
+    - gochecknoglobals
+    - gofumpt
+    - goimports
+    - gosimple
+    - govet
+    - ineffassign
+    - loggercheck
+    - misspell
+    - nonamedreturns
+    - reassign
+    - staticcheck
+    - stylecheck
+    - thelper
+    - typecheck
+    - unconvert
+    - unparam
+    - unused
+    - errcheck
